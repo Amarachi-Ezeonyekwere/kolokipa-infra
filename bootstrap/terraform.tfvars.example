@@ -1,0 +1,3 @@
+aws_region        = "your-region"
+state_bucket_name = "your-project-tfstate-your-account-id"
+lock_table_name    = "your-project-tfstate-lock"
