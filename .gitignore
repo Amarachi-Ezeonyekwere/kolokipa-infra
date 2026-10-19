@@ -4,10 +4,12 @@
 # State files — even though we use a remote backend, never let a local/stray one get committed
 *.tfstate
 *.tfstate.*
+*.terraform.lock.hcl*
+*.terraform*
 
 # Crash logs
-crash.log
-crash.*.log
+*crash.log
+*crash.*.log
 
 # Variable files — these often hold environment-specific values;
 # the .example file is the one that SHOULD be committed as a template
@@ -16,8 +18,10 @@ crash.*.log
 !*.tfvars.example
 
 # Terraform CLI config — can contain credentials/tokens
-.terraformrc
-terraform.rc
+*.terraformrc
+*terraform.rc
 
 # Saved plan output
 *.tfplan
+*.hcl
+!*.hcl.example
