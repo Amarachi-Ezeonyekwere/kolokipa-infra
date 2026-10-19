@@ -1,0 +1,15 @@
+vpc_cidr_block = "x.x.x.x/x"
+
+public_subnet_cidrs      = ["x.x.x.x/x", "x.x.x.x/x"]
+private_app_subnet_cidrs = ["x.x.x.x/x", "x.x.x.x/x"]
+private_db_subnet_cidrs  = ["x.x.x.x/x", "x.x.x.x/x"]
+nextjs_port              = xxxx
+springboot_port          = xxxx
+db_username              = "put your name"
+db_name                  = "use any name you want"
+engine_version           = "17.11"
+instance_class           = "db.t3.micro"
+allocated_storage        = 20
+multi_az                 = false or true depends on your tier
+github_org               = "insert your github_org name"
+app_repo_name            = "insert your repo app_repo_name"

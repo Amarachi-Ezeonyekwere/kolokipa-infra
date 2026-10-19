@@ -1,0 +1,3 @@
+bucket         = "your-project-tfstate-your-account-id"
+region         = "your-region"
+dynamodb_table = "your-project-tfstate-lock"
