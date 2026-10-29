@@ -1,0 +1,54 @@
+name: terraform-destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm'
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: environments/dev
+
+jobs:
+  destroy:
+    if: ${{ github.event.inputs.confirm == 'destroy' }}
+    runs-on: ubuntu-latest
+    environment: production # second human checkpoint
+    steps:
+      - name: Collect workflow telemetry
+        uses: step-security/workflow-telemetry-action@v2
+        with:
+          job_summary: true
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Write backend and tfvars files
+        env:
+          BACKEND_HCL: ${{ secrets.BACKEND_HCL }}
+          TFVARS_DEV: ${{ secrets.TFVARS_DEV }}
+        run: |
+          echo "$BACKEND_HCL" > backend.hcl
+          echo "$TFVARS_DEV" > terraform.tfvars
+
+      - name: Terraform init
+        run: terraform init -backend-config=backend.hcl
+
+      - name: Terraform destroy
+        run: terraform destroy -auto-approve
