@@ -109,8 +109,8 @@ resource "aws_iam_role" "terraform_runner" {
         }
         StringLike = {
           "token.actions.githubusercontent.com:sub" = [
-            "repo:${var.github_org}/${var.infra_repo_name}:ref:refs/heads/main",
-            "repo:${var.github_org}/${var.infra_repo_name}:environment:production",
+            "repo:${var.github_org}@*/${var.infra_repo_name}@*:ref:refs/heads/main",
+            "repo:${var.github_org}@*/${var.infra_repo_name}@*:environment:production",
           ]
         }
       }
