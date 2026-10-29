@@ -40,8 +40,8 @@ resource "aws_db_instance" "main" {
   allocated_storage = var.allocated_storage
   storage_encrypted = true
 
-  db_name  = var.db_name
-  username = var.username
+  db_name                     = var.db_name
+  username                    = var.username
   manage_master_user_password = true
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
