@@ -101,7 +101,7 @@ resource "aws_iam_role" "terraform_runner" {
     Version = "2012-10-17"
     Statement = [{
       Effect    = "Allow"
-      Action    = "sts:AssumeRoleWithWebIdentity"
+      Action    = ["sts:AssumeRoleWithWebIdentity", "sts:TagSession"]
       Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
       Condition = {
         StringEquals = {
