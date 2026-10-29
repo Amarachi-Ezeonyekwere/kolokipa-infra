@@ -1,0 +1,104 @@
+name: terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "environments/dev/**"
+      - "modules/**"
+      - ".github/workflows/terraform.yml"
+      - "!**/*.md"
+      - "!**/*.example"
+
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+    working-directory: environments/dev
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect workflow telemetry
+        uses: step-security/workflow-telemetry-action@v2
+        with:
+          job_summary: true
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive ../../
+
+      - name: Write backend and tfvars files
+        env:
+          BACKEND_HCL: ${{ secrets.BACKEND_HCL }}
+          TFVARS_DEV: ${{ secrets.TFVARS_DEV }}
+        run: |
+          echo "$BACKEND_HCL" > backend.hcl
+          echo "$TFVARS_DEV" > terraform.tfvars
+
+      - name: Terraform init
+        run: terraform init -backend-config=backend.hcl
+
+      - name: tfsec scan
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: environments/dev
+          soft_fail: true # first runs: report findings without blocking; set false once triaged
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -out=tfplan
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: environments/dev/tfplan
+          retention-days: 1
+
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production # pauses here until you approve
+    steps:
+      - name: Collect workflow telemetry
+        uses: step-security/workflow-telemetry-action@v2
+        with:
+          job_summary: true
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Write backend file
+        env:
+          BACKEND_HCL: ${{ secrets.BACKEND_HCL }}
+        run: echo "$BACKEND_HCL" > backend.hcl
+
+      - name: Terraform init
+        run: terraform init -backend-config=backend.hcl
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: environments/dev
+
+      - name: Terraform apply
+        run: terraform apply tfplan
