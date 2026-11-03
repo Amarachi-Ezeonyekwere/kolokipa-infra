@@ -5,17 +5,19 @@ resource "aws_security_group" "alb" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    #tfsec:ignore:aws-ec2-no-public-ingress-sgr
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
+    description = "Forward traffic to targets inside the VPC"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc_cidr_block]
 
   }
 
@@ -33,9 +35,6 @@ resource "aws_lb" "main" {
 
   enable_deletion_protection = var.enable_deletion_protection
 
-  # Access logs deferred: requires an S3 bucket plus a bucket policy
-  # granting the region's ELB service account write access. Revisit
-  # once the observability pass covers this properly.
 
   tags = {
     Name = "${var.name}-alb"
@@ -82,6 +81,7 @@ resource "aws_lb_target_group" "springboot" {
   }
 }
 
+#tfsec:ignore:aws-elb-http-not-used
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = 80

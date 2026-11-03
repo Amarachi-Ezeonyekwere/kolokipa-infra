@@ -40,3 +40,8 @@ variable "enable_deletion_protection" {
   default     = false
   description = "Set true once this is a real production environment — blocks accidental terraform destroy."
 }
+
+variable "vpc_cidr_block" {
+  type        = string
+  description = "VPC CIDR; the ALB only needs to reach targets inside the VPC."
+}
