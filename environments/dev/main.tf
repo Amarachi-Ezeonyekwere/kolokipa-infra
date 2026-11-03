@@ -12,6 +12,7 @@ module "alb" {
   source = "../../modules/alb"
 
   name              = var.name
+  vpc_cidr_block    = module.networking.vpc_cidr_block
   vpc_id            = module.networking.vpc_id
   public_subnet_ids = module.networking.public_subnet_ids
   nextjs_port       = var.nextjs_port
