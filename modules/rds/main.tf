@@ -19,13 +19,6 @@ resource "aws_security_group" "db" {
     security_groups = [var.ecs_tasks_security_group_id]
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name = "${var.name}-db-sg"
   }
