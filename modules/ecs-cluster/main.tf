@@ -38,6 +38,15 @@ resource "aws_security_group" "ecs_tasks" {
     security_groups = [var.alb_security_group_id]
   }
 
+  # Task-to-task: the Next.js server calls the backend over private DNS.
+  ingress {
+    description = "Frontend tasks reach backend tasks directly"
+    from_port   = var.springboot_port
+    to_port     = var.springboot_port
+    protocol    = "tcp"
+    self        = true
+  }
+
   egress {
     from_port = 0
     to_port   = 0

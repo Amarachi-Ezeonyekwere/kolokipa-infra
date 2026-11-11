@@ -10,7 +10,13 @@ variable "github_org" {
 
 variable "app_repo_name" {
   type        = string
-  description = "Name of the application repo whose main-branch workflow is allowed to assume this role."
+  description = "Name of the application repo whose workflows are allowed to assume this role."
+}
+
+variable "github_environment" {
+  type        = string
+  default     = "production"
+  description = "GitHub Environment name whose deploy jobs may assume this role."
 }
 
 variable "ecr_repository_arn" {
@@ -21,5 +27,5 @@ variable "ecr_repository_arn" {
 variable "ecs_task_role_arns" {
   type        = list(string)
   default     = []
-  description = "ARNs of ECS task/execution roles this role can pass to ECS. Empty until the ECS service's task roles exist."
+  description = "ARNs of ECS task/execution roles this role can pass to ECS."
 }

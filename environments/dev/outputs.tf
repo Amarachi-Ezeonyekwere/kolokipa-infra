@@ -61,3 +61,8 @@ output "ecr_repository_url" {
 output "github_actions_role_arn" {
   value = module.iam_oidc.github_actions_role_arn
 }
+
+output "app_url" {
+  value       = "http://${module.alb.alb_dns_name}"
+  description = "Where the application is reachable once a release has been deployed."
+}

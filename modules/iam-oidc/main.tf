@@ -16,8 +16,14 @@ resource "aws_iam_role" "github_actions_deploy" {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
+        # A job that declares `environment: production` presents an
+        # environment-based identity instead of a branch-based one, so both
+        # are trusted. Pull-request jobs match neither and get no AWS access.
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}/${var.app_repo_name}:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub" = [
+            "repo:${var.github_org}/${var.app_repo_name}:ref:refs/heads/main",
+            "repo:${var.github_org}/${var.app_repo_name}:environment:${var.github_environment}",
+          ]
         }
       }
     }]
@@ -52,6 +58,7 @@ resource "aws_iam_role_policy" "github_actions_deploy" {
             "ecr:UploadLayerPart",
             "ecr:CompleteLayerUpload",
             "ecr:BatchGetImage",
+            "ecr:DescribeImages",
           ]
           Resource = var.ecr_repository_arn
         },
