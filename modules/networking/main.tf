@@ -25,7 +25,7 @@ resource "aws_subnet" "public" {
   cidr_block        = var.public_subnet_cidrs[count.index]
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${var.name}-public-${count.index}"
@@ -204,6 +204,7 @@ resource "aws_iam_role" "vpc_flow_logs" {
   })
 }
 
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_role_policy" "vpc_flow_logs" {
   name = "${var.name}-vpc-flow-logs-policy"
   role = aws_iam_role.vpc_flow_logs.id

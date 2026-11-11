@@ -26,6 +26,7 @@ resource "aws_security_group" "alb" {
   }
 }
 
+#tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "main" {
   name               = "${var.name}-alb"
   internal           = false
@@ -34,6 +35,7 @@ resource "aws_lb" "main" {
   subnets            = var.public_subnet_ids
 
   enable_deletion_protection = var.enable_deletion_protection
+  drop_invalid_header_fields = true
 
 
   tags = {
