@@ -17,7 +17,7 @@ budget allocated for either.
 
 ## Decision
 Provision an ALB in the public subnets, with a security group
-allowing inbound HTTP/HTTPS from the internet and outbound to the ECS
+allowing inbound HTTP from the internet and outbound to the ECS
 task security group only. Do not provision Route 53 or a custom
 domain. The application is reached via the ALB's AWS-assigned DNS
 name (`<name>-<id>.<region>.elb.amazonaws.com`).
@@ -29,10 +29,8 @@ name (`<name>-<id>.<region>.elb.amazonaws.com`).
 - Still demonstrates the correct pattern — public-subnet load
   balancer terminating traffic in front of private-subnet compute —
   which is the architecturally significant part of this decision
-- ALB's own AWS-issued DNS name still supports HTTPS via an ACM
-  certificate issued for that default domain is not possible (ACM
-  requires a domain you control) — noted as a real limitation below,
-  not glossed over
+- The ALB’s AWS-assigned DNS name cannot carry an ACM certificate, 
+  so HTTPS requires a domain you control.This is a real limitation, noted below.
 
 **Negative / trade-offs:**
 - No custom domain — the AWS-generated hostname is long and
